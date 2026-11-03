@@ -200,12 +200,21 @@
         body: JSON.stringify(data)
       }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
         .then(function (res) {
-          if (!res.ok || String(res.j.success) === "false") throw new Error("failed");
+          if (!res.ok || String(res.j.success) === "false") {
+            var msg = (res.j && res.j.message) || "";
+            if (/activat/i.test(msg)) {
+              status.className = "form-status is-err";
+              status.innerHTML = "<b>Almost there.</b> This form is waiting for its one-time activation. Please email me directly at <a href=\"mailto:" + EMAIL + "\">" + EMAIL + "</a> for now.";
+              return;
+            }
+            throw new Error(msg || "failed");
+          }
           form.reset();
           status.className = "form-status is-ok";
           status.innerHTML = "<b>Thank you, your request is in.</b> I'll review your practice and reply personally by email.";
         })
-        .catch(function () {
+        .catch(function (err) {
+          if (window.console) console.warn("Form error:", err && err.message);
           status.className = "form-status is-err";
           status.innerHTML = "Sorry, the form couldn't send just now. Please email me directly at <a href=\"mailto:" + EMAIL + "\">" + EMAIL + "</a>.";
         })
