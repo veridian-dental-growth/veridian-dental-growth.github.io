@@ -52,7 +52,7 @@
     <div class="form-card" id="audit-form" data-reveal style="scroll-margin-top:100px">
       <h2>Request your free audit</h2>
       <p>It takes under a minute. Fields marked optional can be left blank.</p>
-      <form class="form" action="https://formsubmit.co/rapheal.i.chukwuka@gmail.com" method="POST" novalidate>
+      <form class="form" action="https://api.web3forms.com/submit" method="POST" novalidate>
         <div class="field">
           <label for="f-name">Your name</label>
           <input id="f-name" name="Name" type="text" autocomplete="name" required>
@@ -99,11 +99,11 @@
           <label for="f-msg">Anything I should know? <em>(optional)</em></label>
           <textarea id="f-msg" name="Message" placeholder="Services you want to sell more of, current challenges, goals…"></textarea>
         </div>
-        <input type="hidden" name="_subject" value="New free audit request: Veridian Growth">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_next" value="https://veridian-growth-co.github.io/audit.html#sent">
-        <label class="hp" aria-hidden="true">Leave this empty<input type="text" name="_honey" tabindex="-1" autocomplete="off"></label>
+        <input type="hidden" name="access_key" value="cd2b9f6f-7f1a-4442-a4b8-3a4ed3dd6322">
+        <input type="hidden" name="subject" value="New free audit request: Veridian Growth">
+        <input type="hidden" name="from_name" value="Veridian Growth website">
+        <input type="hidden" name="redirect" value="https://veridian-growth-co.github.io/audit.html#sent">
+        <input type="checkbox" name="botcheck" class="hp" style="display:none" tabindex="-1" autocomplete="off">
         <label class="consent"><input type="checkbox" name="Privacy notice" value="Read and accepted" required><span>I've read the <a href="#privacy">privacy notice</a> and I'm happy for you to use these details to reply to my request.</span></label>
         <button class="btn btn--primary" type="submit">Request my free audit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         <div class="form-status" role="status" aria-live="polite"></div>
@@ -145,7 +145,7 @@
 <section class="section" style="padding-top:clamp(60px,8vw,100px)">
   <div class="container">
     <article class="legal" id="privacy">
-      <span class="updated">Last updated: 3 November 2026</span>
+      <span class="updated">Last updated: 4 November 2026</span>
       <h2>Privacy notice</h2>
       <p>This notice explains what happens to the information you share through this website.</p>
 
@@ -168,7 +168,7 @@
 
       <h3>Who else handles it</h3>
       <ul>
-        <li><strong>FormSubmit</strong> delivers form submissions to my inbox.</li>
+        <li><strong>Web3Forms</strong> delivers form submissions to my inbox.</li>
         <li><strong>Google (Gmail)</strong> is where I receive and store emails.</li>
         <li><strong>GitHub Pages</strong> hosts this website and may log visitors' IP addresses for security.</li>
         <li><strong>Google Fonts</strong> supplies the fonts on this site, so Google receives your IP address when the page loads.</li>

@@ -179,22 +179,44 @@
     Object.keys(map).forEach(function (id) { var s = document.getElementById(id); if (s) so.observe(s); });
   }
 
-  /* ----- Audit form: native POST to FormSubmit, then back here with #sent ----- */
+  /* ----- Audit form: Web3Forms (AJAX, with normal POST as fallback) ----- */
   var form = document.querySelector("#audit-form form");
   if (form) {
     var status = form.querySelector(".form-status");
     var btn = form.querySelector("button[type=submit]");
-    if (location.hash === "#sent") {
+    var btnHTML = btn.innerHTML;
+    function ok() {
       status.className = "form-status is-ok";
       status.innerHTML = "<b>Thank you, your request is in.</b> I'll review your business and reply personally by email.";
+    }
+    if (location.hash === "#sent") {
+      ok();
       setTimeout(function () { document.getElementById("audit-form").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }, 300);
     }
     form.addEventListener("submit", function (e) {
-      if (form.querySelector("[name=_honey]").value) { e.preventDefault(); return; }
-      if (!form.checkValidity()) { e.preventDefault(); form.reportValidity(); return; }
-      btn.disabled = true;
-      btn.textContent = "Sending…";
+      e.preventDefault();
+      if (form.querySelector("[name=botcheck]").checked) return;
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      if (!window.fetch) { form.submit(); return; }
+      var data = {};
+      new FormData(form).forEach(function (v, k) { if (k !== "redirect" && k !== "botcheck") data[k] = v; });
+      btn.disabled = true; btn.textContent = "Sending…";
+      status.className = "form-status";
+      fetch(form.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(data)
+      }).then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (!j || !j.success) throw new Error((j && j.message) || "failed");
+          form.reset(); ok();
+        })
+        .catch(function (err) {
+          if (window.console) console.warn("Form error:", err && err.message);
+          status.className = "form-status is-err";
+          status.innerHTML = "Sorry, the form couldn't send just now. Please email me directly at <a href=\"mailto:" + EMAIL + "\">" + EMAIL + "</a>.";
+        })
+        .then(function () { btn.disabled = false; btn.innerHTML = btnHTML; });
     });
-    window.addEventListener("pageshow", function () { btn.disabled = false; });
   }
 })();
