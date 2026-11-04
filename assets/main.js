@@ -179,46 +179,22 @@
     Object.keys(map).forEach(function (id) { var s = document.getElementById(id); if (s) so.observe(s); });
   }
 
-  /* ----- Audit form: send to email via FormSubmit ----- */
+  /* ----- Audit form: native POST to FormSubmit, then back here with #sent ----- */
   var form = document.querySelector("#audit-form form");
   if (form) {
     var status = form.querySelector(".form-status");
     var btn = form.querySelector("button[type=submit]");
-    var btnHTML = btn.innerHTML;
+    if (location.hash === "#sent") {
+      status.className = "form-status is-ok";
+      status.innerHTML = "<b>Thank you, your request is in.</b> I'll review your business and reply personally by email.";
+      setTimeout(function () { document.getElementById("audit-form").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }, 300);
+    }
     form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (form.querySelector("[name=_honey]").value) return;
-      if (!form.checkValidity()) { form.reportValidity(); return; }
-      var data = {};
-      new FormData(form).forEach(function (v, k) { data[k] = v; });
+      if (form.querySelector("[name=_honey]").value) { e.preventDefault(); return; }
+      if (!form.checkValidity()) { e.preventDefault(); form.reportValidity(); return; }
       btn.disabled = true;
       btn.textContent = "Sending…";
-      status.className = "form-status";
-      fetch("https://formsubmit.co/ajax/" + EMAIL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(data)
-      }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-        .then(function (res) {
-          if (!res.ok || String(res.j.success) === "false") {
-            var msg = (res.j && res.j.message) || "";
-            if (/activat/i.test(msg)) {
-              status.className = "form-status is-err";
-              status.innerHTML = "<b>Almost there.</b> This form is waiting for its one-time activation. Please email me directly at <a href=\"mailto:" + EMAIL + "\">" + EMAIL + "</a> for now.";
-              return;
-            }
-            throw new Error(msg || "failed");
-          }
-          form.reset();
-          status.className = "form-status is-ok";
-          status.innerHTML = "<b>Thank you, your request is in.</b> I'll review your practice and reply personally by email.";
-        })
-        .catch(function (err) {
-          if (window.console) console.warn("Form error:", err && err.message);
-          status.className = "form-status is-err";
-          status.innerHTML = "Sorry, the form couldn't send just now. Please email me directly at <a href=\"mailto:" + EMAIL + "\">" + EMAIL + "</a>.";
-        })
-        .then(function () { btn.disabled = false; btn.innerHTML = btnHTML; });
     });
+    window.addEventListener("pageshow", function () { btn.disabled = false; });
   }
 })();
